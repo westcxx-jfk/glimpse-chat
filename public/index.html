@@ -248,6 +248,12 @@
     return Math.random().toString(36).substring(2, 8);
   }
 
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
   function copyToClipboard(text) {
     function showCopied(success) {
       copyBtn.textContent = success ? 'Copied' : 'Select & copy the link above';
@@ -350,6 +356,61 @@
     const name = usernameInput.value.trim();
     if (!name || !myRoom) return;
     enterChat(myRoom, name);
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }
+
+  // --- Alerts for messages that arrive while the tab isn't in focus ---
+  const originalTitle = document.title;
+  let titleFlashTimer = null;
+
+  function playBeep() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = 720;
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.25);
+    } catch (err) { /* audio not available — fail silently */ }
+  }
+
+  function flashTitle() {
+    if (titleFlashTimer) return;
+    let showingAlert = true;
+    titleFlashTimer = setInterval(() => {
+      document.title = showingAlert ? '💬 New message' : originalTitle;
+      showingAlert = !showingAlert;
+    }, 1000);
+  }
+
+  function stopFlashingTitle() {
+    if (titleFlashTimer) {
+      clearInterval(titleFlashTimer);
+      titleFlashTimer = null;
+    }
+    document.title = originalTitle;
+  }
+
+  window.addEventListener('focus', stopFlashingTitle);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) stopFlashingTitle();
+  });
+
+  function notifyIncomingMessage(username, text) {
+    if (document.hidden) {
+      playBeep();
+      flashTitle();
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(`${username} — Glimpse`, { body: text });
+      }
+    }
   }
 
   joinBtn.addEventListener('click', join);
@@ -395,8 +456,23 @@
 
   inputEl.addEventListener('input', () => { socket.emit('typing', inputEl.value); });
 
+  // Track each person's live typing text separately, so in a group
+  // chat, multiple people typing at once don't overwrite each other.
+  const typingUsers = {};
   socket.on('partnerTyping', ({ username, text }) => {
-    previewEl.textContent = text ? `${username} is typing: "${text}"` : '';
+    if (text) {
+      typingUsers[username] = text;
+    } else {
+      delete typingUsers[username];
+    }
+    const names = Object.keys(typingUsers);
+    if (names.length === 0) {
+      previewEl.innerHTML = '';
+    } else {
+      previewEl.innerHTML = names
+        .map(name => `<div>${escapeHtml(name)} is typing: "${escapeHtml(typingUsers[name])}"</div>`)
+        .join('');
+    }
   });
 
   function sendMessage() {
@@ -427,7 +503,10 @@
   socket.on('newMessage', (msg) => {
     renderMessage(msg);
     messagesEl.scrollTop = messagesEl.scrollHeight;
-    previewEl.textContent = '';
+    previewEl.innerHTML = '';
+    if (msg.username !== myUsername) {
+      notifyIncomingMessage(msg.username, msg.text);
+    }
   });
 
   // Past messages from the last 24 hours, sent once when you join a room
