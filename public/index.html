@@ -359,7 +359,7 @@
   sendBtn.addEventListener('click', sendMessage);
   inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
 
-  socket.on('newMessage', ({ username, text }) => {
+  function renderMessage({ username, text }) {
     const row = document.createElement('div');
     row.className = 'msg-row' + (username === myUsername ? ' mine' : '');
     const nameEl = document.createElement('div');
@@ -371,8 +371,18 @@
     row.appendChild(nameEl);
     row.appendChild(bubble);
     messagesEl.appendChild(row);
+  }
+
+  socket.on('newMessage', (msg) => {
+    renderMessage(msg);
     messagesEl.scrollTop = messagesEl.scrollHeight;
     previewEl.textContent = '';
+  });
+
+  // Past messages from the last 24 hours, sent once when you join a room
+  socket.on('chatHistory', (messages) => {
+    messages.forEach(renderMessage);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
   });
 </script>
 
