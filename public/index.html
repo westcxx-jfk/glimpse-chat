@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>Glimpse</title>
+
+<!-- Add to Home Screen support -->
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0a0908">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Glimpse">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -39,10 +48,9 @@
   /* ---- Wordmark ---- */
   .brand { display: flex; align-items: baseline; gap: 9px; margin-bottom: 6px; }
   .flash {
-    font-family: 'Fraunces', serif;
-    color: var(--accent);
-    font-size: 22px;
-    line-height: 1;
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
   }
   h1 {
     font-family: 'Fraunces', serif;
@@ -180,7 +188,7 @@
 
 <div class="app">
   <div class="brand">
-    <span class="flash">✴</span>
+    <img class="flash" src="/icons/wordmark-eye.png" alt="">
     <h1>Glimpse</h1>
   </div>
   <div class="tagline">what almost got said</div>
@@ -189,6 +197,10 @@
     <p>Start a chat for up to 5 people, or join one with a link</p>
     <button id="createBtn" class="primary-btn">Start a new chat</button>
     <div id="linkBox"></div>
+    <div id="qrWrap" style="display:none; text-align:center; margin-bottom:10px;">
+      <div id="qrCodeTarget" style="display:inline-block; padding:10px; background:#fff; border-radius:3px;"></div>
+      <div style="font-size:11px; color:var(--muted); margin-top:6px;">scan to join</div>
+    </div>
     <button id="copyBtn" class="copy-btn" style="display:none;">Copy link</button>
     <button id="continueBtn" class="primary-btn" style="display:none;">Continue to chat</button>
 
@@ -217,6 +229,7 @@
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
   const socket = io();
   let myUsername = '';
@@ -228,6 +241,8 @@
 
   const createBtn = document.getElementById('createBtn');
   const linkBox = document.getElementById('linkBox');
+  const qrWrap = document.getElementById('qrWrap');
+  const qrCodeTarget = document.getElementById('qrCodeTarget');
   const copyBtn = document.getElementById('copyBtn');
   const continueBtn = document.getElementById('continueBtn');
   const roomCodeInput = document.getElementById('roomCodeInput');
@@ -307,6 +322,19 @@
     continueBtn.style.display = 'block';
     createBtn.style.display = 'none';
     copyBtn.onclick = () => copyToClipboard(link);
+
+    // Show a scannable QR code for the same link
+    if (window.QRCode) {
+      qrCodeTarget.innerHTML = '';
+      new QRCode(qrCodeTarget, {
+        text: link,
+        width: 140,
+        height: 140,
+        colorDark: '#0a0908',
+        colorLight: '#ffffff',
+      });
+      qrWrap.style.display = 'block';
+    }
   });
 
   continueBtn.addEventListener('click', () => goToUsernameScreen(pendingRoom));
