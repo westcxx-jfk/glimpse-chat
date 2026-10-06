@@ -311,23 +311,45 @@
     const match = value.match(/room=([a-zA-Z0-9]+)/);
     const room = match ? match[1] : value;
     history.replaceState(null, '', `/?room=${room}`);
-    goToUsernameScreen(room);
+
+    const savedName = localStorage.getItem('glimpse-name-' + room);
+    if (savedName) {
+      enterChat(room, savedName);
+    } else {
+      goToUsernameScreen(room);
+    }
   });
 
   window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const room = params.get('room');
-    if (room) goToUsernameScreen(room);
+    if (!room) return;
+
+    // If this browser already has a saved name for this exact room,
+    // skip straight into the chat instead of asking again.
+    const savedName = localStorage.getItem('glimpse-name-' + room);
+    if (savedName) {
+      enterChat(room, savedName);
+    } else {
+      goToUsernameScreen(room);
+    }
   });
+
+  function enterChat(room, username) {
+    myRoom = room;
+    myUsername = username;
+    localStorage.setItem('glimpse-name-' + room, username);
+    socket.emit('join', { room, username });
+    startScreen.style.display = 'none';
+    joinScreen.style.display = 'none';
+    chatScreen.style.display = 'block';
+    inputEl.focus();
+  }
 
   function join() {
     const name = usernameInput.value.trim();
     if (!name || !myRoom) return;
-    myUsername = name;
-    socket.emit('join', { room: myRoom, username: myUsername });
-    joinScreen.style.display = 'none';
-    chatScreen.style.display = 'block';
-    inputEl.focus();
+    enterChat(myRoom, name);
   }
 
   joinBtn.addEventListener('click', join);
