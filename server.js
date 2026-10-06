@@ -8,40 +8,57 @@ const io = new Server(server);
 
 app.use(express.static('public'));
 
-// Track connected users: { socket.id: username }
-const users = {};
+// Track connected users per room: { roomId: { socket.id: username } }
+const rooms = {};
 
-function broadcastUserList() {
-  io.emit('userList', Object.values(users));
+function broadcastUserList(room) {
+  const list = rooms[room] ? Object.values(rooms[room]) : [];
+  io.to(room).emit('userList', list);
 }
 
 io.on('connection', (socket) => {
-  socket.on('join', (username) => {
-    users[socket.id] = username || 'Anonymous';
-    console.log(`${users[socket.id]} connected. Total: ${Object.keys(users).length}`);
-    broadcastUserList();
+  let currentRoom = null;
+
+  socket.on('join', ({ room, username }) => {
+    if (!room) return;
+    currentRoom = room;
+    socket.join(room);
+
+    if (!rooms[room]) rooms[room] = {};
+    rooms[room][socket.id] = username || 'Anonymous';
+
+    console.log(`${rooms[room][socket.id]} joined room "${room}". Room size: ${Object.keys(rooms[room]).length}`);
+    broadcastUserList(room);
   });
 
   // Live keystroke preview — fires on every keypress, before Send
   socket.on('typing', (text) => {
-    socket.broadcast.emit('partnerTyping', { username: users[socket.id], text });
+    if (!currentRoom) return;
+    socket.to(currentRoom).emit('partnerTyping', { username: rooms[currentRoom]?.[socket.id], text });
   });
 
   // Actual sent message
   socket.on('sendMessage', (text) => {
-    io.emit('newMessage', { username: users[socket.id] || 'Anonymous', text });
+    if (!currentRoom) return;
+    io.to(currentRoom).emit('newMessage', { username: rooms[currentRoom]?.[socket.id] || 'Anonymous', text });
   });
 
   socket.on('disconnect', () => {
-    const name = users[socket.id];
-    delete users[socket.id];
-    console.log(`${name} disconnected. Total: ${Object.keys(users).length}`);
-    broadcastUserList();
-    io.emit('partnerTyping', { username: name, text: '' }); // clear their preview if they vanish mid-type
+    if (!currentRoom || !rooms[currentRoom]) return;
+    const name = rooms[currentRoom][socket.id];
+    delete rooms[currentRoom][socket.id];
+    console.log(`${name} left room "${currentRoom}". Room size: ${Object.keys(rooms[currentRoom]).length}`);
+
+    if (Object.keys(rooms[currentRoom]).length === 0) {
+      delete rooms[currentRoom]; // clean up empty rooms
+    } else {
+      broadcastUserList(currentRoom);
+      io.to(currentRoom).emit('partnerTyping', { username: name, text: '' });
+    }
   });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
