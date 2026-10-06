@@ -35,6 +35,8 @@ const Message = mongoose.model('Message', messageSchema);
 
 // Track connected users per room: { roomId: { socket.id: username } }
 const rooms = {};
+// Track when each room first started, so clients can show a 24h countdown
+const roomStartTimes = {};
 const MAX_ROOM_SIZE = 5;
 
 function broadcastUserList(room) {
@@ -59,6 +61,10 @@ io.on('connection', (socket) => {
 
     if (!rooms[room]) rooms[room] = {};
     rooms[room][socket.id] = username || 'Anonymous';
+
+    // Record the room's start time the first time anyone joins it
+    if (!roomStartTimes[room]) roomStartTimes[room] = Date.now();
+    socket.emit('roomStartTime', roomStartTimes[room]);
 
     console.log(`${rooms[room][socket.id]} joined room "${room}". Room size: ${Object.keys(rooms[room]).length}`);
     broadcastUserList(room);
@@ -103,6 +109,7 @@ io.on('connection', (socket) => {
 
     if (Object.keys(rooms[currentRoom]).length === 0) {
       delete rooms[currentRoom];
+      delete roomStartTimes[currentRoom];
     } else {
       broadcastUserList(currentRoom);
       io.to(currentRoom).emit('partnerTyping', { username: name, text: '' });
