@@ -1,0 +1,13 @@
+{
+  "name": "live-typing-chat",
+  "version": "1.0.0",
+  "description": "A simple two-person chat where you see the other person typing live, before they hit send.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  }
+}
