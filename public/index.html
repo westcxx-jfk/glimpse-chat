@@ -335,7 +335,7 @@
     const others = list.filter(n => n !== myUsername);
     if (list.length >= 2) {
       statusEl.classList.remove('waiting');
-      statusText.textContent = `${list.length}/5 — with ${others.join(', ')}`;
+      statusText.textContent = `you, ${others.join(', ')}`;
     } else {
       statusEl.classList.add('waiting');
       statusText.textContent = 'waiting for others to join...';
