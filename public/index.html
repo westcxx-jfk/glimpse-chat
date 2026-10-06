@@ -125,6 +125,11 @@
   #status.waiting .dot { background: var(--muted); animation: pulse 1.4s infinite; }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
+  #expiry {
+    font-size: 11px; color: var(--muted); margin: 0 0 14px 2px;
+    font-family: monospace; letter-spacing: 0.2px;
+  }
+
   #messages { height: min(52vh, 380px); overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
   #messages::-webkit-scrollbar { width: 4px; }
   #messages::-webkit-scrollbar-thumb { background: var(--border-strong); }
@@ -201,6 +206,7 @@
 
   <div id="chatScreen">
     <div id="status" class="waiting"><span class="dot"></span><span id="statusText">Waiting for the other person to join...</span></div>
+    <div id="expiry"></div>
     <div id="messages" class="panel"></div>
     <div id="preview"></div>
     <div id="inputBar" class="panel">
@@ -232,6 +238,7 @@
 
   const statusEl = document.getElementById('status');
   const statusText = document.getElementById('statusText');
+  const expiryEl = document.getElementById('expiry');
   const messagesEl = document.getElementById('messages');
   const previewEl = document.getElementById('preview');
   const inputEl = document.getElementById('textInput');
@@ -325,6 +332,28 @@
 
   joinBtn.addEventListener('click', join);
   usernameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') join(); });
+
+  // Live 24-hour countdown, shown in the chat header
+  let countdownTimer = null;
+  socket.on('roomStartTime', (startTime) => {
+    const expiresAt = startTime + 24 * 60 * 60 * 1000;
+
+    function updateCountdown() {
+      const remainingMs = expiresAt - Date.now();
+      if (remainingMs <= 0) {
+        expiryEl.textContent = 'this chat has expired';
+        clearInterval(countdownTimer);
+        return;
+      }
+      const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+      const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+      expiryEl.textContent = `clears in ${hours}h ${minutes}m`;
+    }
+
+    updateCountdown();
+    if (countdownTimer) clearInterval(countdownTimer);
+    countdownTimer = setInterval(updateCountdown, 60 * 1000); // update every minute
+  });
 
   socket.on('roomFull', (maxSize) => {
     joinScreen.querySelector('p').textContent = `this chat is full (max ${maxSize} people) — ask for a new link`;
