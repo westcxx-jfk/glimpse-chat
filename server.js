@@ -19,8 +19,18 @@ function broadcastUserList(room) {
 io.on('connection', (socket) => {
   let currentRoom = null;
 
+  const MAX_ROOM_SIZE = 5;
+
   socket.on('join', ({ room, username }) => {
     if (!room) return;
+
+    // Enforce the group size cap before letting anyone in
+    const existingCount = rooms[room] ? Object.keys(rooms[room]).length : 0;
+    if (existingCount >= MAX_ROOM_SIZE) {
+      socket.emit('roomFull', MAX_ROOM_SIZE);
+      return;
+    }
+
     currentRoom = room;
     socket.join(room);
 
