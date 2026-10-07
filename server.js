@@ -37,6 +37,10 @@ const Message = mongoose.model('Message', messageSchema);
 const rooms = {};
 // Track when each room first started, so clients can show a 24h countdown
 const roomStartTimes = {};
+// Optional custom name set by whoever created the room
+const roomNames = {};
+// Who created each room — only they can end it for everyone
+const roomCreators = {};
 const MAX_ROOM_SIZE = 5;
 
 function broadcastUserList(room) {
@@ -47,7 +51,7 @@ function broadcastUserList(room) {
 io.on('connection', (socket) => {
   let currentRoom = null;
 
-  socket.on('join', async ({ room, username }) => {
+  socket.on('join', async ({ room, username, roomName }) => {
     if (!room) return;
 
     const existingCount = rooms[room] ? Object.keys(rooms[room]).length : 0;
@@ -56,15 +60,27 @@ io.on('connection', (socket) => {
       return;
     }
 
+    const isNewRoom = !rooms[room];
     currentRoom = room;
     socket.join(room);
 
     if (!rooms[room]) rooms[room] = {};
     rooms[room][socket.id] = username || 'Anonymous';
 
-    // Record the room's start time the first time anyone joins it
+    // Record the room's start time and creator the first time anyone joins it
     if (!roomStartTimes[room]) roomStartTimes[room] = Date.now();
-    socket.emit('roomStartTime', roomStartTimes[room]);
+    if (isNewRoom) {
+      roomCreators[room] = socket.id;
+      if (roomName && roomName.trim()) {
+        roomNames[room] = roomName.trim().slice(0, 40);
+      }
+    }
+
+    socket.emit('roomInfo', {
+      startTime: roomStartTimes[room],
+      name: roomNames[room] || null,
+      isCreator: roomCreators[room] === socket.id,
+    });
 
     console.log(`${rooms[room][socket.id]} joined room "${room}". Room size: ${Object.keys(rooms[room]).length}`);
     broadcastUserList(room);
@@ -101,6 +117,27 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Only the room's creator can end it for everyone currently in it
+  socket.on('endChat', async () => {
+    if (!currentRoom || roomCreators[currentRoom] !== socket.id) return;
+
+    io.to(currentRoom).emit('chatEnded');
+
+    if (MONGODB_URI) {
+      try {
+        await Message.deleteMany({ room: currentRoom });
+      } catch (err) {
+        console.error('Failed to clear ended chat history:', err);
+      }
+    }
+
+    delete rooms[currentRoom];
+    delete roomStartTimes[currentRoom];
+    delete roomNames[currentRoom];
+    delete roomCreators[currentRoom];
+    console.log(`Room "${currentRoom}" was ended by its creator.`);
+  });
+
   socket.on('disconnect', () => {
     if (!currentRoom || !rooms[currentRoom]) return;
     const name = rooms[currentRoom][socket.id];
@@ -110,6 +147,8 @@ io.on('connection', (socket) => {
     if (Object.keys(rooms[currentRoom]).length === 0) {
       delete rooms[currentRoom];
       delete roomStartTimes[currentRoom];
+      delete roomNames[currentRoom];
+      delete roomCreators[currentRoom];
     } else {
       broadcastUserList(currentRoom);
       io.to(currentRoom).emit('partnerTyping', { username: name, text: '' });
