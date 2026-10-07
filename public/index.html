@@ -7,8 +7,8 @@
 
 <!-- Add to Home Screen support -->
 <link rel="manifest" href="/manifest.json">
-<link rel="icon" href="/icons/favicon-32.png">
-<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAoklEQVR4nO2VwQ2AIAxFhXhQBnIFZ3YFB/LsgcSQT1tbUROS/pvQ/oct1ZDmafhS8VN3BzigD8CojNuPFVaWtGkSw+0k19YmjASQrZUYFiC4l3ZXGMcgANaalPH1Lt4ifVlI1elR3gaRdYBFMPl30JRXWxaY4BvIDLKGcpOJSc5B1m5zJ2N7wCUAOD8+GTTOUXkOA4DDvPaxa1T/PxwHOKBdJ2umOA6paSS7AAAAAElFTkSuQmCC">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEN0lEQVR4nO3dQVLcMBBAUZHKIsmBcgXOnCtwINZZqGrKNcmnwJbU3fJ/e7Dd/iMPZjAvv37+aNL/fIveAeVlHELGIWQcQsYhZBxCxiFkHELGIWQcQsYhZBxCxiFkHELGIWQcQsYhZBxCxiFkHELGIWQcQsYhZBxCxiFkHELGIWQcQsYhZBxCxiFkHELGIWQcQsYhZBxCxiFkHELGIWQcQsYhZBxCxiFkHELGIWQcQsYhZBxCxiFkHELGIWQcQsYh9D16BwK8vb+e+Krfv/4M35PkXu7wr0PP1fCxO7SyeRwzsjjaO5EN45gdBNkvlH3iiGriX9tUskMcebI42iCR2nHkzOKodCKF73PkL6MV2UlSNY5CQy+0q0+KXVbqDrqrdZUpE0f1LI6qJFIgjp2yOMqfSPb3HLuW0SocWuo48o/vouQHmPSyknxqw+W8xGRcOe5WRst6yLlWjpwzWinVEpJo5bCMlmwIWVaOVEP5DHqJDzmQJOtHfByFsvjqObt4aOGJBMdRpYwr5+nKMcb2Efme4w5lXPzy2BGFrRwlyhj7wj19yFHrR0AcJbJoc05JrUvM0jiqZNFmnolC71LXveewjCHffOUYF8VhGQM3sWyYK+IoVEYVa0Y6PY5aZSy7ol/f0ILBzo3DMqZubvZ4J8ZRq4yipg55VhyWscy8UY+/z1E0i6i7kAPHNfwQBq8cRcvYw/Dhj4zDMsKNPQXD4ihdRuBvxodveuCJGBNH6TL2M+p0jHlgXM/fRDIYuBSNfM8R/rE2jT0Fg39asY9Aw4c//jmkXmLWm/SanHWH1CVkmXmjnvi7FftYYOqQ5/5W1j6mmj3e6Z/nKNFH4DukzB9JX/FJsBJ91LJmpIs+Q2ofAy0b5rpPnyfvI+TKcmKjK8e49P+teAvkivWvroB/xmMiXxW16Ib9IXXCq8ziXj+5ucBBRf6V/Z37yF9GC3/sU8I+8ggfTvwzwcJH8GTB4vGZTWQYS3wcLccgjqb2UaWMFv7YpyepfoQJeT5Hkiy6XHF0eRJZ+WSfVFl0GeNomfpoS/6oNWEZLW0cXZ5E5j30LWcWXeo4WqY+2oTnkGYuo+WPoyXr4+H6E4yTl9FKxNHlTOSc/Fl0ZeLoqidSJYuuWBwPtSqp1cRDijukJxQad6FdfVI1jlZk6CV2klS9rBzlvMSUzqLbIY4uTyIbZNHtE8dDVCXbNPGwYRxHs0PZL4ijzePoZiSydxbdLeJ4cq6VO9Tw5I5xfODt/fWGERDjECp8E0yzGYeQcQgZh5BxCBmHkHEIGYeQcQgZh5BxCBmHkHEIGYeQcQgZh5BxCBmHkHEIGYeQcQgZh5BxCBmHkHEIGYeQcQgZh5BxCBmHkHEIGYeQcQgZh5BxCBmHkHEIGYeQcQgZh5BxCBmHkHEIGYeQcQgZh5BxCBmHkHEIGYeQcQgZh9Bf+iUxKnHkuGAAAAAASUVORK5CYII=">
 <meta name="theme-color" content="#0a0908">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -134,8 +134,38 @@
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
   #expiry {
-    font-size: 11px; color: var(--muted); margin: 0 0 14px 2px;
+    font-size: 11px; color: var(--muted); margin: 0 0 10px 2px;
     font-family: monospace; letter-spacing: 0.2px;
+  }
+
+  #roomTitle {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 19px;
+    color: var(--text);
+    margin: 0 0 6px 2px;
+  }
+
+  #chatActions { display: flex; gap: 14px; margin: 0 0 14px 2px; }
+  .action-link {
+    background: none; border: none; padding: 0; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif; font-size: 11.5px;
+    color: var(--muted); text-decoration: underline; text-underline-offset: 2px;
+  }
+  .action-link:hover { color: var(--text); }
+  #endChatBtn { color: #ff6b6b; }
+
+  #chatEndedOverlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10,9,8,0.92);
+    align-items: center; justify-content: center;
+    text-align: center;
+    z-index: 10;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 20px;
+    padding: 20px;
   }
 
   #messages { height: min(52vh, 380px); overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
@@ -188,18 +218,20 @@
 
 <div class="app">
   <div class="brand">
-    <img class="flash" src="/icons/wordmark-eye.png" alt="">
+    <img class="flash" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAACzElEQVR4nO3dUU7rMBCFYYPuctgLa2Uv7Kf3yVJk2sZ2xp45k/97RIJMfE7TQJpQCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiO7De4DVfh/fjyvf//Xxk3qN0u3c1cDPZCuE/M6sDvyMeiFkh/cOvqVaBLmhowXfUiuCzLDRg2+pFCH8kGrBt6IXIexw6sG3ohYh3FDZgm9FK0KYYbIH34pSBPch7hZ8y7sIbhu/e/AtryJ8emyU8P/yWpPtrVMO/+xVarFvu48E2zamGvxsICpXIbdsRDF8qwCu7PuOEizfgFr4qxZ9dh1Wl2DZD1cLvpT1ix3xaGD+QxWDL2Xfe260cwPTXwMJf/22rNfYrACEv2+blmttUgDC379tqzW/XADV8DOwWPvpFqoH730RprJax9n9mToCqIef0WwmwwXIEH6UV38ptrPMZDNUgAzhZzeaUXcBCF/HSFZdBcgUfqTDf7Vipt7MTguQKfy76cnubQEIX99Zhi8LQPh5/D6+H6/yfFoAwr+Pf8++WE9KKEIO704y354DRDxjxpizDE9/C6AEunqy6/o7QKYSRHxbWzFTb2bdfwnMVILsRrIauhZACeIbzWj4amCGEkR6G7CcZSabqc8DZChBNrOZXA4y0qtplHeRI9xLePkzgd6LeGcWa2/yqWDVEngevaLcIGJ2XwAl2LdNy7U2vTOIEqzflvUac3PowR1vDl32iBjFo8HK0kYMvxSeD/BShAdEWM7xCo+IOcEjYoypFqEUHhJlRrkEK3mcN7k8J1DxBHE1rzVxD+LuRwPvF4N7Aaq7FcE7+CrEEEfZixAl+CrUMEfZihAt+CrkUEfqRYgafBV6uCO1IkQPvpIY8ih6EVSCr6SGPYpWBLXgK8mhj7yLoBp8JT38M/zz6DGpduYZlatycOL9FgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQIf/52Zk8g6DPYkAAAAASUVORK5CYII=" alt="">
     <h1>Glimpse</h1>
   </div>
   <div class="tagline">what almost got said</div>
 
   <div id="startScreen" class="panel screen">
     <p>Start a chat for up to 5 people, or join one with a link</p>
+    <input id="roomNameInput" placeholder="Name this chat (optional)" autocomplete="off" maxlength="40">
     <button id="createBtn" class="primary-btn">Start a new chat</button>
     <div id="linkBox"></div>
     <div id="qrWrap" style="display:none; text-align:center; margin-bottom:10px;">
       <div id="qrCodeTarget" style="display:inline-block; padding:10px; background:#fff; border-radius:3px;"></div>
-      <div style="font-size:11px; color:var(--muted); margin-top:6px;">scan to join</div>
+      <div style="font-size:11px; color:var(--muted); margin:6px 0 10px;">scan to join</div>
+      <button id="saveQrBtn" class="copy-btn" type="button">Save QR code</button>
     </div>
     <button id="copyBtn" class="copy-btn" style="display:none;">Copy link</button>
     <button id="continueBtn" class="primary-btn" style="display:none;">Continue to chat</button>
@@ -217,8 +249,13 @@
   </div>
 
   <div id="chatScreen">
+    <div id="roomTitle" style="display:none;"></div>
     <div id="status" class="waiting"><span class="dot"></span><span id="statusText">Waiting for the other person to join...</span></div>
     <div id="expiry"></div>
+    <div id="chatActions">
+      <button id="leaveBtn" class="action-link">Leave chat</button>
+      <button id="endChatBtn" class="action-link" style="display:none;">End chat for everyone</button>
+    </div>
     <div id="messages" class="panel"></div>
     <div id="preview"></div>
     <div id="inputBar" class="panel">
@@ -226,6 +263,7 @@
       <button id="sendBtn">Send</button>
     </div>
   </div>
+  <div id="chatEndedOverlay">this chat was ended</div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -243,6 +281,7 @@
   const linkBox = document.getElementById('linkBox');
   const qrWrap = document.getElementById('qrWrap');
   const qrCodeTarget = document.getElementById('qrCodeTarget');
+  const saveQrBtn = document.getElementById('saveQrBtn');
   const copyBtn = document.getElementById('copyBtn');
   const continueBtn = document.getElementById('continueBtn');
   const roomCodeInput = document.getElementById('roomCodeInput');
@@ -254,6 +293,11 @@
   const statusEl = document.getElementById('status');
   const statusText = document.getElementById('statusText');
   const expiryEl = document.getElementById('expiry');
+  const roomTitleEl = document.getElementById('roomTitle');
+  const leaveBtn = document.getElementById('leaveBtn');
+  const endChatBtn = document.getElementById('endChatBtn');
+  const chatEndedOverlay = document.getElementById('chatEndedOverlay');
+  const roomNameInput = document.getElementById('roomNameInput');
   const messagesEl = document.getElementById('messages');
   const previewEl = document.getElementById('preview');
   const inputEl = document.getElementById('textInput');
@@ -303,8 +347,10 @@
   }
 
   let pendingRoom = '';
+  let pendingRoomName = '';
   createBtn.addEventListener('click', () => {
     pendingRoom = randomRoomCode();
+    pendingRoomName = roomNameInput.value.trim();
     const link = `${window.location.origin}/?room=${pendingRoom}`;
     history.replaceState(null, '', `/?room=${pendingRoom}`);
     linkBox.textContent = link;
@@ -335,6 +381,41 @@
       });
       qrWrap.style.display = 'block';
     }
+  });
+
+  // Let people save the QR code as an image to their photos/downloads
+  saveQrBtn.addEventListener('click', () => {
+    // qrcodejs renders either a <canvas> or an <img> inside the target,
+    // depending on the browser, so handle both.
+    const canvas = qrCodeTarget.querySelector('canvas');
+    const img = qrCodeTarget.querySelector('img');
+    let dataUrl = null;
+
+    if (canvas) {
+      dataUrl = canvas.toDataURL('image/png');
+    } else if (img) {
+      dataUrl = img.src;
+    }
+    if (!dataUrl) return;
+
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = `glimpse-qr-${pendingRoom || 'chat'}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // iPhone Safari doesn't always respect the download attribute for
+    // "save to photos", so also open it in a new tab as a reliable fallback —
+    // from there, a long-press gives a direct "Save to Photos" option.
+    const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent);
+    if (isIOS) {
+      window.open(dataUrl, '_blank');
+      saveQrBtn.textContent = 'Opened — long-press to save';
+    } else {
+      saveQrBtn.textContent = 'Saved!';
+    }
+    setTimeout(() => { saveQrBtn.textContent = 'Save QR code'; }, 2000);
   });
 
   continueBtn.addEventListener('click', () => goToUsernameScreen(pendingRoom));
@@ -369,11 +450,11 @@
     }
   });
 
-  function enterChat(room, username) {
+  function enterChat(room, username, roomNameForCreation) {
     myRoom = room;
     myUsername = username;
     localStorage.setItem('glimpse-name-' + room, username);
-    socket.emit('join', { room, username });
+    socket.emit('join', { room, username, roomName: roomNameForCreation || undefined });
     startScreen.style.display = 'none';
     joinScreen.style.display = 'none';
     chatScreen.style.display = 'block';
@@ -383,7 +464,7 @@
   function join() {
     const name = usernameInput.value.trim();
     if (!name || !myRoom) return;
-    enterChat(myRoom, name);
+    enterChat(myRoom, name, pendingRoomName);
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
@@ -444,9 +525,9 @@
   joinBtn.addEventListener('click', join);
   usernameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') join(); });
 
-  // Live 24-hour countdown, shown in the chat header
+  // Live 24-hour countdown, room name, and creator controls
   let countdownTimer = null;
-  socket.on('roomStartTime', (startTime) => {
+  socket.on('roomInfo', ({ startTime, name, isCreator }) => {
     const expiresAt = startTime + 24 * 60 * 60 * 1000;
 
     function updateCountdown() {
@@ -463,7 +544,37 @@
 
     updateCountdown();
     if (countdownTimer) clearInterval(countdownTimer);
-    countdownTimer = setInterval(updateCountdown, 60 * 1000); // update every minute
+    countdownTimer = setInterval(updateCountdown, 60 * 1000);
+
+    if (name) {
+      roomTitleEl.textContent = name;
+      roomTitleEl.style.display = 'block';
+    } else {
+      roomTitleEl.style.display = 'none';
+    }
+
+    endChatBtn.style.display = isCreator ? 'inline-block' : 'none';
+  });
+
+  // Leaving just takes you back to the start screen — your membership
+  // (and saved name) for this room is remembered for next time.
+  leaveBtn.addEventListener('click', () => {
+    window.location.href = window.location.origin;
+  });
+
+  // Only visible to the room's creator — ends it for everyone right now
+  endChatBtn.addEventListener('click', () => {
+    if (confirm('End this chat for everyone? This clears the conversation early.')) {
+      socket.emit('endChat');
+    }
+  });
+
+  socket.on('chatEnded', () => {
+    chatEndedOverlay.style.display = 'flex';
+    if (countdownTimer) clearInterval(countdownTimer);
+    setTimeout(() => {
+      window.location.href = window.location.origin;
+    }, 2500);
   });
 
   socket.on('roomFull', (maxSize) => {
